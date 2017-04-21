@@ -17,18 +17,19 @@ function getDataFromApi(searchTerm, callback) {
 }
 
 function storeResultLengths(data){
-  //console.log(data.results.length);
-resultLengthArray.push(data.results.length);
+ // console.log(data, typeof data.results, data.results, data.results.length);
 
+resultLengthArray.push(data.results.length);
+//console.log(resultLengthArray);
 }
 
 function displayResultLengths(){
-//  console.log(resultLengthArray);
-  console.log(resultLengthArray);
+
+ console.log(resultLengthArray);
 }
 
 function displayWORDSearchData(data) {
-  console.log(data.results.length);
+ // console.log(data.results.length);
   resultLengthArray.push(data.results.length);
 
   var resultElement = '';
@@ -48,11 +49,10 @@ function startApi(){
     for(var i=0; i<query.length; i++){
 
         getDataFromApi(query[i], storeResultLengths);
-        console.log(i);
-        if(i==query.length-1){
-          displayResultLengths();
-        }
+       // console.log(i);
+        
       }
+      setTimeout(function(){ displayResultLengths(); }, 3000);
 }
 
 function watchSubmit() {
@@ -60,7 +60,7 @@ function watchSubmit() {
     e.preventDefault();
     startApi();
     
-      displayResultLengths();
+      
     
   });
 }
