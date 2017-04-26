@@ -2,13 +2,17 @@ var WORDS_BASE_URL = 'https://wordsapiv1.p.mashape.com/words/';
 var resultLengthArray = [];
 var num = 0;
 var resultsArray=[];
+var resultsObject = {
+};
 function getDataFromApi(searchTerm, callback) {
   var settings = {
     url: 'https://wordsapiv1.p.mashape.com/words/' + searchTerm + '',
     data: {},
     dataType: 'json',
     type: 'GET',
-    success: callback,
+    success: function(data){
+      callback(data, searchTerm);
+    },
     error: function(err) { alert(err); },
     beforeSend: function(xhr) {
     xhr.setRequestHeader("X-Mashape-Authorization", "5QNhUGUmVamshQCbuFO6ykRJBCqFp1nqhQgjsnNahs0JInCns7");
@@ -18,16 +22,17 @@ function getDataFromApi(searchTerm, callback) {
   $.ajax(settings);
 }
 
-function storeResultLengths(data){
+function storeResults(data, searchTerm){
  // console.log(data, typeof data.results, data.results, data.results.length);
   var query = $(".js-query").val().split(" ");
 
 resultLengthArray.push(data.results.length);
 resultsArray.push(data.results);
+resultsObject[searchTerm] = data.results;
 num++;
 if(num === query.length){
+setTimeout(function(){  updateDivs(data);}, 2000);
 
-  updateDivs(data);
 
 }
 //console.log(resultLengthArray);
@@ -54,9 +59,10 @@ function displayWORDSearchData(data) {
 function updateDivs(data){
 
   var query = $(".js-query").val().split(" ");
-  $('.js-search-results').append('<div class="word 1">' + query[0] + '</div>');
-   for(var x=0; x<resultsArray[0].length; x++){
-       $('.js-search-results').append('<div id="definition ' + (x+1) + 'class="word 1">' + resultsArray[0][x].definition + '</div>');
+  console.log(resultsObject[query[0]]);
+  $('.word').append('<div class="word 1">' + query[0] + '</div>');
+   for(var x=0; x<resultsObject[query[0]].length; x++){
+       $('.definitions').append('<input type="checkbox" class="definitions" id="definition ' + (x+1) + 'class="word 1">' + resultsObject[query[0]][x].definition + '</input><br>');
 
    }
   for(var i=1; i<query.length; i++){ 
@@ -66,14 +72,22 @@ function updateDivs(data){
 
    }
   }
+$('.js-search-results').append('<button class="next">Next Word</button>')
+$(".next").on("click", function(){
+storeDefs(data);
 
+})
+
+}
+function storeDefs(data){
+  console.log(data);
 }
 function startApi(){
 
   var query = $(".js-query").val().split(" ");
     for(var i=0; i<query.length; i++){
 
-        getDataFromApi(query[i], storeResultLengths);
+        getDataFromApi(query[i], storeResults);
        // console.log(i);
         
       }
